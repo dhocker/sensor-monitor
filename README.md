@@ -11,8 +11,9 @@ written in Python 3.
 
 ## Hardware Requirements
 
-* a [Raspberry Pi](https://en.wikipedia.org/wiki/Raspberry_Pi#Networking) model 3 or 4 (one with WiFi and Bluetooth support)
-* 2 4x20 [LCD panel](https://smile.amazon.com/dp/B086VVT4NH/). 
+* a [Raspberry Pi](https://en.wikipedia.org/wiki/Raspberry_Pi#Networking) model 3, model 4,
+Zero W or Zero 2 W (one with WiFi and Bluetooth support)
+* a 4x20 [LCD panel](https://smile.amazon.com/dp/B086VVT4NH/). 
 Any 4x20 LCD panel based on the PCF8574 controller for I2C should work.
 
 # Installation and Setup
