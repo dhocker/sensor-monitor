@@ -1,6 +1,6 @@
 # Raspberry Pi Based Sensor Monitor for RuuviTag Sensors
 
-![alt text](https://github.com/dhocker/sensor-monitor/raw/master/images/LCD-Example "LCD Example")
+![alt text](https://github.com/dhocker/sensor-monitor/raw/master/images/LCD-Example.jpg "LCD Example")
 
 ## Overview
 This project is a Raspberry Pi (RPi) based sensor monitor for RuuviTag sensors. It is all
