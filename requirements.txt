@@ -1,0 +1,8 @@
+async-timeout==4.0.2
+bleson==0.1.8
+dbus-fast==1.7.0
+ptyprocess==0.7.0
+reactivex==4.0.4
+ruuvitag-sensor==2.0.0
+smbus2==0.4.2
+typing_extensions==4.3.0
