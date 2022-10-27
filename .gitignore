@@ -1,6 +1,6 @@
 *.pyc
 *.log
-*.conf
+sensor_monitor.conf
 sensor_monitor.log*
 Thumbs.db
 .idea/

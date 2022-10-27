@@ -2,6 +2,9 @@
 
 ![alt text](https://github.com/dhocker/sensor-monitor/raw/master/images/LCD-Example.jpg "LCD Example")
 
+LCD panel showing output from the sensor-monitor. Each row represents a sensor and
+the last temperature and humidity it reported.
+
 ## Overview
 This project is a Raspberry Pi (RPi) based sensor monitor for RuuviTag sensors. It is all
 written in Python 3.
@@ -53,19 +56,28 @@ Select "Interface Options" and then select "I2C". Choose "Yes" to enable I2C.
 The easiest way to get the project files is to clone the GitHub repository.
 
 ```shell
+cd
+mkdir rpi
+cd rpi
 git clone https://github.com/dhocker/sensor-monitor.git
 ```
+
+The project assumes that its root is at ~/rpi/sensor-monitor.
 
 ## Create a VENV
 Here, [virtualenv](https://virtualenv.pypa.io/en/latest/) and 
 [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) are assumed.
+If you install these tools it is recommended that you setup ~/Virtualenvs as
+the folder for keeping VENVs. This will minimize the number of changes you will need
+to make later (if you install sensor-monitor as a daemon).
 
 ```shell
 mkvirtualenv -p python3 -r requirements.txt sensor-monitor3
 ```
 ## Create a Configuration File
 sensor-monitor can be controlled through sensor_monitor.conf. Note that this file **is not**
-part of the GitHub repo. The configuration file must be kept in the root directory of the project.
+part of the GitHub repo. However, there is a sensor_monitor.example.conf file that
+serves as a template. The configuration file must be kept in the root directory of the project.
 
 The configuration file is composed of JSON and looks like this.
 
@@ -102,7 +114,7 @@ Otherwise, your sensors will be shown with names derived from the last 4 digits 
 | temperature_format | "F" for fahrenheit or "C" for centigrade. |
 
 ### How to Find a RuuviTag's mac
-There are two ways to find a tag's mac (it is not on the sensor).
+There are several ways to find a tag's mac (it is not on the sensor).
 
 The first way is to use the Ruuvi app on an iPad, iPhone or Android phone. Activate one sensor at a time
 and check the app to see what mac shows up.
@@ -110,12 +122,27 @@ and check the app to see what mac shows up.
 The second way is to turn on "debug_sensors" in the configuration file and look at the 
 [ruuvi.json](#ruuvitag-data) file it produces. Again, activate one sensor at a time.
 
+And, a third way is to look in the current log file. sensor_monitor will log a sensor
+when it is first detected. Immediately after activating a sensor watch the current log file.
+The taillog.sh script is provided to do just that.
+
+```shell
+./taillog.sh
+```
+Here's what you should see.
+```
+2022-10-24 10:58:47, MainThread, sensor_monitor, INFO, Monitoring sensor 11:11:11:11:12:34 1234
+```
+If the sensor is configured, its name will appear instead of 1234. If the sensor has not been
+configured you can capture its mac (the 11:11:11:11:12:34 in the above log line) and add it to sensor_monitor.conf.
+
 ## Install as Daemon (Optional)
 You can easily install the sensor-monitor as a daemon. The following shell scripts facilitate
 this process. Before using any of these scripts you should review each one. 
 
-You may need to edit the sensormoniotrD.sh script to adjust for your VENV. If you followed these instructions
-you should not need to make any changes.
+You may need to edit the sensormonitorD.sh script to adjust for your VENV. If you followed these instructions
+you may not need to make any changes. **Note that this script assumes that VENVs are at
+~/Virtualenvs.**
 
 While reviewing sensormonitorD.sh note that the daemon is configured to run as root. Older versions 
 of Raspberry Pi OS required root permission to use I2C. That is no longer the case, so you can
@@ -124,12 +151,12 @@ pi user.
 
 | Script            | Use                                                                           |
 |-------------------|-------------------------------------------------------------------------------|
-| sensormoniotrD.sh | The daemon script that will be installed |
-| installD.sh       | Installs sensor-moniotr as a daemon. sensor-monitor is automatically started. |
+| sensormoniotrD.sh | The daemon script that will be installed                                      |
+| installD.sh       | Installs sensor-monitor as a daemon. sensor-monitor is automatically started. |
 | uninstallD.sh     | Uninstalls sensor-monitor when previously installed as a daemon.              |
-| startD.sh         | Starts the sensor-monitor daemon. |
-| stopD.sh          | Stops the sensor-monitor if it is running. |
-| restartD.sh       | Stops then starts the sensor-monitor daemon. |
+| startD.sh         | Starts the sensor-monitor daemon.                                             |
+| stopD.sh          | Stops the sensor-monitor if it is running.                                    |
+| restartD.sh       | Stops then starts the sensor-monitor daemon.                                  |
 
 You can always check the status of statusmonitorD.sh by running
 ```shell
