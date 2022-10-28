@@ -145,10 +145,9 @@ You may need to edit the sensormonitorD.sh script to adjust for your VENV. If yo
 you may not need to make any changes. **Note that this script assumes that VENVs are at
 ~/Virtualenvs.**
 
-While reviewing sensormonitorD.sh note that the daemon is configured to run as root. Older versions 
-of Raspberry Pi OS required root permission to use I2C. That is no longer the case, so you can
-change the DAEMON_USER variable to DAEMON_USER=pi if you want to avoid the root user in favor of the 
-pi user.
+While reviewing sensormonitorD.sh note that the daemon is configured to run as pi (DAEMON_USER=pi). 
+Older versions of Raspberry Pi OS required root permission to use I2C. That is no longer the case, so you can
+change the DAEMON_USER variable to another user as long as that user is in the i2c group.
 
 | Script            | Use                                                                           |
 |-------------------|-------------------------------------------------------------------------------|
