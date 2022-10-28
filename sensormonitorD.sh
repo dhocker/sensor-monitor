@@ -29,7 +29,7 @@ PYTHON_INT=$VENV/bin/python
 # This next line determines what user the script runs as.
 # Root generally not recommended but necessary if you are using the Raspberry Pi GPIO from Python.
 # In this case we may be using a USB based serial port which by default requires root access.
-DAEMON_USER=root
+DAEMON_USER=pi
 
 # The process ID of the script when it runs is stored here:
 PIDFILE=/var/run/$DAEMON_NAME.pid
