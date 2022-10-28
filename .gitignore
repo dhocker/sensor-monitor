@@ -2,6 +2,7 @@
 *.log
 sensor_monitor.conf
 sensor_monitor.log*
+*.json
 Thumbs.db
 .idea/
 .DS_Store
