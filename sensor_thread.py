@@ -53,7 +53,7 @@ class SensorThread(Thread):
 
         """
         self.terminate()
-        print("Waiting for SensorThread to terminate")
+        self._logger.info("Waiting for SensorThread to terminate")
         self.join()
 
     def run(self):
