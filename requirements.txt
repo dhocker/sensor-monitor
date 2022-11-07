@@ -6,3 +6,5 @@ reactivex==4.0.4
 ruuvitag-sensor==2.0.0
 smbus2==0.4.2
 typing_extensions==4.3.0
+psutil
+ntplib
