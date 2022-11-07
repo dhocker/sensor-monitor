@@ -21,6 +21,7 @@ import app_logger
 import rtc_sync
 from sensor_thread import SensorThread
 from configuration import Configuration
+from backlight import BacklightState
 from i2c_lcd_driver import LCD
 
 
@@ -33,6 +34,8 @@ class SensorMonitor():
                  temperature_format="F",
                  debug_sensors=False,
                  sensor_config={},
+                 backlight_off_time="23:00",
+                 backlight_on_time="06:00",
                  logger=None):
         """
         Construct an instance of the sensor monitor
@@ -43,6 +46,8 @@ class SensorMonitor():
         :param temperature_format: F or C (fahrenheit or centigrade)
         :param debug_sensors: Dump sensor data to ruuvi.json
         :param sensor_config: A dict keyed by mac. From the current configuration file.
+        :param backlight_off_time: HH:MM when backlight goes off
+        :param backlight_on_time: HH:MM when backlight comes of
         :param logger: An instance of the logger to be used for all output.
         """
         self._the_sensor_thread = the_sensor_thread
@@ -54,6 +59,7 @@ class SensorMonitor():
         self._sensor_config = sensor_config
         self. _known_sensors = []
         self._logger = logger
+        self._backlight_state = BacklightState(off_at=backlight_off_time, on_at=backlight_on_time)
         self._terminate_monitor = False
 
         # Dimensions of expected LCD panel
@@ -181,7 +187,11 @@ class SensorMonitor():
 
                 # Update sensor display. Note that this may take
                 # several update_intervals
-                self._update_sensor_display(current_data)
+                if self._backlight_state.query_backlight_state():
+                    self._the_lcd.backlight(1)
+                    self._update_sensor_display(current_data)
+                else:
+                    self._the_lcd.backlight(0)
 
                 # Wait for the next interval
                 first_pass = False
@@ -229,6 +239,8 @@ class MainProgram():
         tf = config[Configuration.CFG_DEBUG_SENSORS].lower()
         debug_sensors = (tf == "true") or (tf == "yes")
         sensor_config = config[Configuration.CFG_RUUVITAGS]
+        backlight_off_at = config[Configuration.CFG_BACKLIGHT_OFF_AT]
+        backlight_on_at = config[Configuration.CFG_BACKLIGHT_ON_AT]
         
         # Start logging
         app_logger.start(self._logger_name)
@@ -256,7 +268,9 @@ class MainProgram():
                                                  temperature_format=temperature_format,
                                                  debug_sensors=debug_sensors,
                                                  sensor_config=sensor_config,
-                                                 logger=self._logger
+                                                 logger=self._logger,
+                                                 backlight_off_time=backlight_off_at,
+                                                 backlight_on_time=backlight_on_at
                                                  )
         
         # Set up handler for the terminate signal 15
@@ -288,6 +302,7 @@ class MainProgram():
         self._the_sensor_monitor.terminate()
         # Clean up resources allocated at monitor start
         self._thd.close()
+        self._the_lcd.backlight(1)
         self._the_lcd.lcd_clear()
         self._the_lcd.lcd_close()
 

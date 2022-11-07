@@ -40,6 +40,8 @@ class Configuration():
     CFG_UPDATE_INTERVAL = "update_interval"
     CFG_OFFLINE_TIME = "offline_time"  # in seconds
     CFG_TEMPERATURE_FORMAT = "temperature_format"  # F or C
+    CFG_BACKLIGHT_OFF_AT = "backlight_off_at"
+    CFG_BACKLIGHT_ON_AT = "backlight_on_at"
 
     def __init__(self):
         Configuration.load_configuration()
