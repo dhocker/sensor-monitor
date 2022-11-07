@@ -35,6 +35,8 @@ class I2CDevice:
     # I2CBUS = 0
     # For RPi model 3B and RPi 4B. Uses GPIO 2 and 3.
     I2CBUS = 1
+    WAIT_TIME = 0.0001  # 100 US
+    # WAIT_TIME = 0.00005  # 50 us
 
     def __init__(self, addr, port=I2CBUS):
         self._addr = addr
@@ -43,17 +45,17 @@ class I2CDevice:
     # Write a single command
     def write_cmd(self, cmd):
         self._bus.write_byte(self._addr, cmd)
-        sleep(0.0001)
+        sleep(I2CDevice.WAIT_TIME)
 
     # Write a command and argument
     def write_cmd_arg(self, cmd, data):
         self._bus.write_byte_data(self._addr, cmd, data)
-        sleep(0.0001)
+        sleep(I2CDevice.WAIT_TIME)
 
     # Write a block of data
     def write_block_data(self, cmd, data):
         self._bus.write_block_data(self._addr, cmd, data)
-        sleep(0.0001)
+        sleep(I2CDevice.WAIT_TIME)
 
     # Read a single byte
     def read(self):
