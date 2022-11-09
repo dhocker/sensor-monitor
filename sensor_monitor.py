@@ -60,6 +60,7 @@ class SensorMonitor():
         self. _known_sensors = []
         self._logger = logger
         self._backlight_state = BacklightState(off_at=backlight_off_time, on_at=backlight_on_time)
+        self._current_backlight_state = 1
         self._terminate_monitor = False
 
         # Dimensions of expected LCD panel
@@ -188,10 +189,18 @@ class SensorMonitor():
                 # Update sensor display. Note that this may take
                 # several update_intervals
                 if self._backlight_state.query_backlight_state():
+                    # Backlight is on or going on
                     self._the_lcd.backlight(1)
                     self._update_sensor_display(current_data)
+                    if self._current_backlight_state == 0:
+                        self._logger.info("Backlight turned on")
+                        self._current_backlight_state = 1
                 else:
+                    # Backlight is off or going off
                     self._the_lcd.backlight(0)
+                    if self._current_backlight_state == 1:
+                        self._logger.info("Backlight turned off")
+                        self._current_backlight_state = 0
 
                 # Wait for the next interval
                 first_pass = False
