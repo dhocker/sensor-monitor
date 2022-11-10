@@ -26,6 +26,10 @@ from i2c_lcd_driver import LCD
 
 
 class SensorMonitor():
+    # According to Ruuvi this is the lowest serviceable battery reading (milli-volts)
+    BATTERY_LOW_THRESHOLD = 1800
+    BATTERY_WARNING_THRESHOLD = 2000
+
     def __init__(self,
                  the_sensor_thread,
                  the_lcd,
@@ -120,12 +124,22 @@ class SensorMonitor():
         :return:
         """
         # Generate all the lines to be displayed
+        logger = logging.getLogger("sensor_monitor")
         display_lines = []
         for mac in current_data.keys():
             # Reference for sensor data: https://github.com/ruuvi/ruuvi-sensor-protocols/blob/master/dataformat_05.md
             # Update display for this sensor
-            data_age = datetime.datetime.now() - current_data[mac]["timestamp"]
+            # Low battery checks
+            low_battery = ""
+            if current_data[mac]["battery"] <= SensorMonitor.BATTERY_WARNING_THRESHOLD:
+                low_battery = "W"
+                logger.warning(f"Battery warning threshold {SensorMonitor.BATTERY_WARNING_THRESHOLD} for: {mac}")
+            if current_data[mac]["battery"] <= SensorMonitor.BATTERY_LOW_THRESHOLD:
+                low_battery = "B"
+                logger.warning(f"Low battery warning {SensorMonitor.BATTERY_LOW_THRESHOLD} for: {mac}")
+
             # If the data is older than "offline_time" seconds consider the sensor offline
+            data_age = datetime.datetime.now() - current_data[mac]["timestamp"]
             if data_age.seconds < self._offline_time:
                 tmp = current_data[mac]['temperature']
                 if self._temperature_format == "F":
@@ -135,10 +149,9 @@ class SensorMonitor():
                 # We have not received sensor data within the offline_time value
                 tmp = 0.0
                 hum = 0.0
-                logger = logging.getLogger("sensor_monitor")
                 self._logger.warning(f"Sensor {self._mac_name(mac)} {mac} appears to be offline")
 
-            display_lines.append(f"{self._mac_name(mac):7s} {tmp:5.1f} {hum:5.1f}")
+            display_lines.append(f"{self._mac_name(mac):7s} {tmp:5.1f} {hum:5.1f}{low_battery}")
 
         # Alpha sort of lines
         display_lines.sort()
