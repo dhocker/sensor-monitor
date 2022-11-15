@@ -70,6 +70,8 @@ class SensorMonitor():
         # Dimensions of expected LCD panel
         self._rows = 4
         self._cols = 20
+        # The number of display lines on the LCD (the top "n" rows)
+        self._page_size = self._rows - 1
 
     def terminate(self):
         self._terminate_monitor = True
@@ -117,6 +119,24 @@ class SensorMonitor():
         dtstr = SensorMonitor._now_str(now_dt)
         self._the_lcd.lcd_display_string(dtstr, self._rows, 0)
 
+    def _display_page(self, lines):
+        """
+        A page is the top 3 lines of a 4 line display. This method can be called
+        repeatedly to page through one or more lists info display lines.
+        :param lines: List of lines to display. Only the first 3 lines are displayed so
+        the list can be longer than 3 lines.
+        :return:
+        """
+        # Display lines of page
+        self._the_lcd.lcd_clear()
+        self._update_time_display()
+        number_lines = min(self._page_size, len(lines))
+        for i in range(number_lines):
+            self._the_lcd.lcd_display_string(lines[i], i + 1, 0)
+
+        # Page pause. This effectively sets the pace of data updates.
+        sleep(self._page_interval)
+
     def _update_sensor_display(self, current_data):
         """
         Update the LCD with current sensor data. A 4x20 LCD is assumed.
@@ -156,25 +176,17 @@ class SensorMonitor():
         # Alpha sort of lines
         display_lines.sort()
 
-        number_sensors_to_display = len(display_lines)
-        line_num = 0
+        # Display one page of lines at a time
+        for i in range(0, len(display_lines), self._rows - 1):
+            number_lines = self._page_size
+            # The last page might be less than a whole page
+            if i + self._page_size > len(display_lines):
+                number_lines = len(display_lines) % self._page_size
+            self._display_page(display_lines[i : i + number_lines])
 
-        # Display lines with paging
-        self._the_lcd.lcd_clear()
-        self._update_time_display()
-        for a_line in display_lines:
-            self._the_lcd.lcd_display_string(a_line, line_num + 1, 0)
-
-            # Roll the line counter
-            if line_num == 2 and number_sensors_to_display > 3:
-                # Wait before moving on to the next page of sensor data
-                sleep(self._page_interval)
-                line_num = 0
-                self._the_lcd.lcd_clear()
-                self._update_time_display()
-                number_sensors_to_display -= 3
-            else:
-                line_num += 1
+        # TODO Put things like low battery warnings here
+        # info_lines = ["Info 1", "Info 2", "Info 3"]
+        # self._display_page(info_lines)
 
     def run(self):
         first_pass = True
@@ -215,9 +227,8 @@ class SensorMonitor():
                         self._logger.info("Backlight turned off")
                         self._current_backlight_state = 0
 
-                # Wait for the next interval
+                # Next data sample interval
                 first_pass = False
-                sleep(self._page_interval)
 
             except KeyboardInterrupt:
                 self._logger.info("ctrl-c caught in SensorMonitor.run()")
