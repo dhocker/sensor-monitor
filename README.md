@@ -97,7 +97,9 @@ The configuration file is composed of JSON and looks like this.
     "log_console": "true",
     "update_interval": 3.0,
     "offline_time": 600,
-    "temperature_format": "F"
+    "temperature_format": "F",
+    "backlight_off_at": "12:30",
+    "backlight_on_at": "12:35"
 }
 ```
 
@@ -113,6 +115,8 @@ Otherwise, your sensors will be shown with names derived from the last 4 digits 
 | update_interval | Time between LCD updates expressed in seconds (as a float). |
 | offline_time | If no data is received from a sensor in this time (seconds), the sensor is considered offline. |
 | temperature_format | "F" for fahrenheit or "C" for centigrade. |
+| backlight_off_at | HH:MM time when backlight is turned off |
+| backlight_on_at | HH:MM time when backlight is turned on |
 
 ### How to Find a RuuviTag's mac
 There are several ways to find a tag's mac (it is not on the sensor).
