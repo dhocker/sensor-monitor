@@ -41,6 +41,8 @@ class I2CDevice:
     def __init__(self, addr, port=I2CBUS):
         self._addr = addr
         self._bus = smbus.SMBus(port)
+        # See: https://stackoverflow.com/questions/52735862/getting-ioerror-errno-121-remote-i-o-error-with-smbus-on-python-raspberry-w
+        sleep(1.0)
 
     # Write a single command
     def write_cmd(self, cmd):
