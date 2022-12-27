@@ -42,6 +42,7 @@ At a minimum you need to install the following.
 
 ```shell
 sudo apt-get install bluetooth bluez blueman
+sudo apt-get install bluez-hcidump
 ```
 Reboot the RPi after installing the bluetooth packages.
 
